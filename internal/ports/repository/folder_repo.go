@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"atlasdrive/internal/domain/folder"
+	"github.com/Nikhiliitg/atlasdrive/internal/domain/folder"
 )
 
 type FolderRepository interface {
