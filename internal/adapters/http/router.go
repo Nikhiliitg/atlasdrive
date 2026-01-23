@@ -7,6 +7,6 @@ func NewRouter(handler *Handler) http.Handler {
 
 	mux.HandleFunc("/folders", handler.CreateFolder)
 	mux.HandleFunc("/folders/", handler.ListFolderContents)
-
+	mux.HandleFunc("/files", handler.CreateFile)
 	return mux
 }

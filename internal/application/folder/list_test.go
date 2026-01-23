@@ -10,10 +10,13 @@ import (
 func TestListFolderContents(t *testing.T) {
 	ctx := context.Background()
 
-	repo := memory.NewFolderRepo()
+	folderRepo := memory.NewFolderRepo()
+	fileRepo := memory.NewFileRepo()
 
-	createHandler := NewCreateFolderHandler(repo)
-	listHandler := NewListFolderContentsHandler(repo)
+	folderQuery := memory.NewFolderQueryRepo(folderRepo, fileRepo)
+
+	createHandler := NewCreateFolderHandler(folderRepo)
+	listHandler := NewListFolderContentsHandler(folderQuery)
 
 	rootID := "root"
 

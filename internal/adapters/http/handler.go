@@ -6,20 +6,26 @@ import (
 	"strings"
 
 	folderapp "github.com/Nikhiliitg/atlasdrive/internal/application/folder"
+	fileapp "github.com/Nikhiliitg/atlasdrive/internal/application/file"
+
 )
 
 type Handler struct {
 	createHandler *folderapp.CreateFolderHandler
 	listHandler   *folderapp.ListFolderContentsHandler
+	createFileHandler *fileapp.CreateFileHandler
 }
 
 func NewHandler(
 	create *folderapp.CreateFolderHandler,
 	list *folderapp.ListFolderContentsHandler,
+	createFile *fileapp.CreateFileHandler,
+
 ) *Handler {
 	return &Handler{
 		createHandler: create,
 		listHandler:   list,
+		createFileHandler:   createFile,
 	}
 }
 func (h *Handler) CreateFolder(w http.ResponseWriter, r *http.Request) {
@@ -87,4 +93,40 @@ func (h *Handler) ListFolderContents(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(resp)
+}
+
+func (h *Handler) CreateFile(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		ID       string `json:"id"`
+		Name     string `json:"name"`
+		FolderID string `json:"folder_id"`
+		OwnerID  string `json:"owner_id"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	file, err := h.createFileHandler.Handle(
+		r.Context(),
+		fileapp.CreateFileCommand{
+			ID:       req.ID,
+			Name:     req.Name,
+			FolderID: req.FolderID,
+			OwnerID:  req.OwnerID,
+		},
+	)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	json.NewEncoder(w).Encode(file)
 }

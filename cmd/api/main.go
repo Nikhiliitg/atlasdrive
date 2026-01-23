@@ -6,16 +6,30 @@ import (
 
 	httpadapter "github.com/Nikhiliitg/atlasdrive/internal/adapters/http"
 	"github.com/Nikhiliitg/atlasdrive/internal/adapters/memory"
+	fileapp "github.com/Nikhiliitg/atlasdrive/internal/application/file"
 	folderapp "github.com/Nikhiliitg/atlasdrive/internal/application/folder"
 )
 
 func main() {
-	repo := memory.NewFolderRepo()
+	// Repositories
+	folderRepo := memory.NewFolderRepo()
+	fileRepo := memory.NewFileRepo()
 
-	createHandler := folderapp.NewCreateFolderHandler(repo)
-	listHandler := folderapp.NewListFolderContentsHandler(repo)
+	// Composed query (THIS is the key)
+	folderQuery := memory.NewFolderQueryRepo(folderRepo, fileRepo)
 
-	handler := httpadapter.NewHandler(createHandler, listHandler)
+	// Application handlers
+	createFolderHandler := folderapp.NewCreateFolderHandler(folderRepo)
+	listFolderHandler := folderapp.NewListFolderContentsHandler(folderQuery)
+	createFileHandler := fileapp.NewCreateFileHandler(fileRepo)
+
+	// HTTP handler
+	handler := httpadapter.NewHandler(
+		createFolderHandler,
+		listFolderHandler,
+		createFileHandler,
+	)
+
 	router := httpadapter.NewRouter(handler)
 
 	log.Println("Server running on :8080")

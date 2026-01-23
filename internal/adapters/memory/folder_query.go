@@ -25,13 +25,40 @@ func (r *FolderRepository) ListChildFolders(
 	return result, nil
 }
 
-func (r *FolderRepository) ListFilesInFolder(
-	_ context.Context,
-	_ string,
-	_ string,
+func (r *FileRepo) ListFilesInFolder(
+	ctx context.Context,
+	folderID string,
+	ownerID string,
 ) ([]repository.FileSummary, error) {
+	return r.ListByFolder(ctx, folderID, ownerID)
+}
+type FolderQueryRepo struct {
+	folderRepo *FolderRepository
+	fileRepo   *FileRepo
+}
 
-	// Files are not implemented yet.
-	// Returning empty list is correct and honest.
-	return []repository.FileSummary{}, nil
+func NewFolderQueryRepo(
+	folderRepo *FolderRepository,
+	fileRepo *FileRepo,
+) *FolderQueryRepo {
+	return &FolderQueryRepo{
+		folderRepo: folderRepo,
+		fileRepo:   fileRepo,
+	}
+}
+
+func (r *FolderQueryRepo) ListChildFolders(
+	ctx context.Context,
+	parentID string,
+	ownerID string,
+) ([]repository.FolderSummary, error) {
+	return r.folderRepo.ListChildFolders(ctx, parentID, ownerID)
+}
+
+func (r *FolderQueryRepo) ListFilesInFolder(
+	ctx context.Context,
+	folderID string,
+	ownerID string,
+) ([]repository.FileSummary, error) {
+	return r.fileRepo.ListByFolder(ctx, folderID, ownerID)
 }

@@ -25,3 +25,4 @@ type FolderQuery interface {
 		ownerID string,
 	) ([]FileSummary, error)
 }
+
