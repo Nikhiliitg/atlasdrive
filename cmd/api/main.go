@@ -7,7 +7,6 @@ import (
 
 	httpadapter "github.com/Nikhiliitg/atlasdrive/internal/adapters/http"
 	"github.com/Nikhiliitg/atlasdrive/internal/adapters/postgres"
-	"github.com/Nikhiliitg/atlasdrive/internal/adapters/memory"
 	fileapp "github.com/Nikhiliitg/atlasdrive/internal/application/file"
 	folderapp "github.com/Nikhiliitg/atlasdrive/internal/application/folder"
 	_ "github.com/lib/pq"
@@ -21,7 +20,7 @@ func main() {
 
 	// Write side
 	folderRepo := postgres.NewFolderRepo(db)
-	fileRepo := memory.NewFileRepo()
+	fileRepo := postgres.NewFileRepo(db)
 
 	// Read side (Postgres)
 	folderQuery := postgres.NewFolderQueryRepo(db)

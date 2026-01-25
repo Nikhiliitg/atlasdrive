@@ -50,6 +50,23 @@ func (r *FolderQueryRepo) ListFilesInFolder(
 	folderID string,
 	ownerID string,
 ) ([]repository.FileSummary, error) {
-	// Files still in memory for now
-	return []repository.FileSummary{}, nil
+	query := `
+	select id, name
+	from files
+	where folder_id = $1 and owner_id = $2
+	`
+	rows , err := r.db.QueryContext(ctx, query, folderID, ownerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var result []repository.FileSummary
+	for rows.Next() {
+		var f repository.FileSummary
+		if err := rows.Scan(&f.ID, &f.Name); err != nil {
+			return nil, err
+		}
+		result = append(result, f)
+	}
+	return result, nil
 }
