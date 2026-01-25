@@ -3,27 +3,35 @@ package main
 import (
 	"log"
 	"net/http"
+	"database/sql"
 
 	httpadapter "github.com/Nikhiliitg/atlasdrive/internal/adapters/http"
+	"github.com/Nikhiliitg/atlasdrive/internal/adapters/postgres"
 	"github.com/Nikhiliitg/atlasdrive/internal/adapters/memory"
 	fileapp "github.com/Nikhiliitg/atlasdrive/internal/application/file"
 	folderapp "github.com/Nikhiliitg/atlasdrive/internal/application/folder"
+	_ "github.com/lib/pq"
 )
 
 func main() {
-	// Repositories
-	folderRepo := memory.NewFolderRepo()
+	db, err := sql.Open("postgres", "postgres://localhost/atlasdrive?sslmode=disable")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Write side
+	folderRepo := postgres.NewFolderRepo(db)
 	fileRepo := memory.NewFileRepo()
 
-	// Composed query (THIS is the key)
-	folderQuery := memory.NewFolderQueryRepo(folderRepo, fileRepo)
+	// Read side (Postgres)
+	folderQuery := postgres.NewFolderQueryRepo(db)
 
 	// Application handlers
 	createFolderHandler := folderapp.NewCreateFolderHandler(folderRepo)
 	listFolderHandler := folderapp.NewListFolderContentsHandler(folderQuery)
 	createFileHandler := fileapp.NewCreateFileHandler(fileRepo)
 
-	// HTTP handler
+	// HTTP
 	handler := httpadapter.NewHandler(
 		createFolderHandler,
 		listFolderHandler,
