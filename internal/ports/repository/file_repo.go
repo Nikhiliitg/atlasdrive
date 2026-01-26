@@ -7,6 +7,11 @@ import (
 
 type FileRepository interface {
 	Save(ctx context.Context, f *file.File) error
+	SaveWithFolderCheck(
+        ctx context.Context,
+        folderID string,
+        f *file.File,
+    ) error
 	ListByFolder(
 		ctx context.Context,
 		folderID string,

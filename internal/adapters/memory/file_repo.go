@@ -49,3 +49,11 @@ func (r *FileRepo) ListByFolder(
 
 	return result, nil
 }
+func (r *FileRepo) SaveWithFolderCheck(
+    ctx context.Context,
+    folderID string,
+    f *file.File,
+) error {
+    // No transaction in memory, just call Save
+    return r.Save(ctx, f)
+}

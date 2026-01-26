@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"github.com/Nikhiliitg/atlasdrive/internal/domain/file"
 	"github.com/Nikhiliitg/atlasdrive/internal/ports/repository"
+	"errors"
 )
 
 
@@ -50,4 +51,49 @@ func (r *FileRepo) ListByFolder(
 		result = append(result, f)
 	}
 	return result, nil
+}
+func (r *FileRepo) SaveWithFolderCheck(
+	ctx context.Context,
+	folderID string,
+	f *file.File,
+) error {
+
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	// 1. Check folder exists
+	var exists bool
+	err = tx.QueryRowContext(
+		ctx,
+		`SELECT EXISTS(SELECT 1 FROM folders WHERE id = $1)`,
+		folderID,
+	).Scan(&exists)
+
+	if err != nil || !exists {
+		tx.Rollback()
+		return errors.New("folder does not exist")
+	}
+
+	// 2. Insert file
+	_, err = tx.ExecContext(
+		ctx,
+		`
+		INSERT INTO files (id, name, folder_id, owner_id, created_at)
+		VALUES ($1, $2, $3, $4, $5)
+		`,
+		f.ID,
+		f.Name,
+		f.FolderID,
+		f.OwnerID,
+		f.CreatedAt,
+	)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
 }

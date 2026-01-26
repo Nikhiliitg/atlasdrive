@@ -4,6 +4,7 @@ import(
 	"context"
 	"github.com/Nikhiliitg/atlasdrive/internal/domain/file"
 	"github.com/Nikhiliitg/atlasdrive/internal/ports/repository"
+	// "github.com/Nikhiliitg/atlasdrive/internal/adapters/postgres"
 )
 
 type CreateFileCommand struct{
@@ -36,9 +37,10 @@ func (h *CreateFileHandler) Handle(
 		return nil, err
 	}
 
-	if err := h.repo.Save(ctx, f); err != nil {
-		return nil, err
-	}
+	if err := h.repo.SaveWithFolderCheck(ctx, cmd.FolderID, f); err != nil {
+	return nil, err
+}
+
 
 	return f, nil
 }
