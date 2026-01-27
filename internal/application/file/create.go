@@ -11,7 +11,6 @@ type CreateFileCommand struct{
 	ID string
 	Name string
 	FolderID string
-	OwnerID string
 }
 
 type CreateFileHandler struct{
@@ -26,12 +25,13 @@ func (h *CreateFileHandler) Handle(
 	ctx context.Context,
 	cmd CreateFileCommand,
 ) (*file.File, error) {
+	userID := ctx.Value("user_id").(string)
 
 	f, err := file.NewFile(
 		cmd.ID,
 		cmd.Name,
 		cmd.FolderID,
-		cmd.OwnerID,
+		userID,
 	)
 	if err != nil {
 		return nil, err

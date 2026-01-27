@@ -49,7 +49,6 @@ func (h *Handler) CreateFolder(w http.ResponseWriter, r *http.Request) {
 	folder, err := h.createHandler.Handle(r.Context(), folderapp.CreateFolderCommand{
 		ID:       req.ID,
 		Name:     req.Name,
-		OwnerID:  req.OwnerID,
 		ParentID: req.ParentID,
 	})
 	if err != nil {
@@ -119,7 +118,6 @@ func (h *Handler) CreateFile(w http.ResponseWriter, r *http.Request) {
 			ID:       req.ID,
 			Name:     req.Name,
 			FolderID: req.FolderID,
-			OwnerID:  req.OwnerID,
 		},
 	)
 	if err != nil {

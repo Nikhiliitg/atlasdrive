@@ -23,7 +23,6 @@ func TestListFolderContents(t *testing.T) {
 	_, err := createHandler.Handle(ctx, CreateFolderCommand{
 		ID:      rootID,
 		Name:    "root",
-		OwnerID: "user-1",
 	})
 	if err != nil {
 		t.Fatalf("failed to create root folder: %v", err)
@@ -32,14 +31,12 @@ func TestListFolderContents(t *testing.T) {
 	_, _ = createHandler.Handle(ctx, CreateFolderCommand{
 		ID:       "child-1",
 		Name:     "docs",
-		OwnerID:  "user-1",
 		ParentID: &rootID,
 	})
 
 	_, _ = createHandler.Handle(ctx, CreateFolderCommand{
 		ID:       "child-2",
 		Name:     "images",
-		OwnerID:  "user-1",
 		ParentID: &rootID,
 	})
 

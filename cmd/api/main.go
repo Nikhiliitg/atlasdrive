@@ -37,7 +37,9 @@ func main() {
 		createFileHandler,
 	)
 
-	router := httpadapter.NewRouter(handler)
+	authHandler := httpadapter.NewAuthHandler(db)
+	router := httpadapter.NewRouter(handler, authHandler)
+
 
 	log.Println("Server running on :8080")
 	http.ListenAndServe(":8080", router)

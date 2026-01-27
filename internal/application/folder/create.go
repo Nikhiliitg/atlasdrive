@@ -10,7 +10,6 @@ import (
 type CreateFolderCommand struct{
 	ID string
 	Name string
-	OwnerID string
 	ParentID *string
 }
 type CreateFolderHandler struct {
@@ -25,12 +24,13 @@ func (h *CreateFolderHandler) Handle(
 	ctx context.Context,
 	cmd CreateFolderCommand,
 ) (*folder.Folder, error) {
+	userID := ctx.Value("user_id").(string)
 
 	// Domain creation (rules enforced here)
 	f, err := folder.NewFolder(
 		cmd.ID,
 		cmd.Name,
-		cmd.OwnerID,
+		userID,
 		cmd.ParentID,
 	)
 	if err != nil {

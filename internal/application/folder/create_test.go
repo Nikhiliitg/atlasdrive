@@ -19,7 +19,6 @@ func TestCreateFolder(t *testing.T) {
 	rootCmd := CreateFolderCommand{
 		ID:      rootID,
 		Name:    "root",
-		OwnerID: "user-1",
 	}
 
 	root, err := handler.Handle(ctx, rootCmd)
@@ -36,7 +35,6 @@ func TestCreateFolder(t *testing.T) {
 	childCmd := CreateFolderCommand{
 		ID:       childID,
 		Name:     "documents",
-		OwnerID:  "user-1",
 		ParentID: &rootID,
 	}
 
@@ -53,7 +51,6 @@ func TestCreateFolder(t *testing.T) {
 	cycleCmd := CreateFolderCommand{
 		ID:       rootID,
 		Name:     "evil-root",
-		OwnerID:  "user-1",
 		ParentID: &rootID,
 	}
 
