@@ -9,7 +9,7 @@ import (
 )
 
 func TestCreateFolder(t *testing.T) {
-	ctx := context.Background()
+	ctx := context.WithValue(context.Background(), "user_id", "test-user")
 	// In-memory repo (no DB, no excuses)
 	repo := memory.NewFolderRepo()
 	handler := NewCreateFolderHandler(repo)

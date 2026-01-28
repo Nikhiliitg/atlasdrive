@@ -8,7 +8,8 @@ import (
 )
 
 func TestListFolderContents(t *testing.T) {
-	ctx := context.Background()
+	ctx := context.WithValue(context.Background(), "user_id", "test-user")
+
 
 	folderRepo := memory.NewFolderRepo()
 	fileRepo := memory.NewFileRepo()
@@ -16,7 +17,10 @@ func TestListFolderContents(t *testing.T) {
 	folderQuery := memory.NewFolderQueryRepo(folderRepo, fileRepo)
 
 	createHandler := NewCreateFolderHandler(folderRepo)
-	listHandler := NewListFolderContentsHandler(folderQuery)
+	// listHandler := NewListFolderContentsHandler(folderQuery)
+	cache := newFakeCache()
+	listHandler := NewListFolderContentsHandler(folderQuery, cache)
+
 
 	rootID := "root"
 
@@ -42,7 +46,6 @@ func TestListFolderContents(t *testing.T) {
 
 	folders, files, err := listHandler.Handle(ctx, ListFolderContentsQuery{
 		FolderID: rootID,
-		OwnerID:  "user-1",
 	})
 	if err != nil {
 		t.Fatalf("list failed: %v", err)

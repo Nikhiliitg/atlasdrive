@@ -37,7 +37,6 @@ func (h *Handler) CreateFolder(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		ID       string  `json:"id"`
 		Name     string  `json:"name"`
-		OwnerID  string  `json:"owner_id"`
 		ParentID *string `json:"parent_id"`
 	}
 
@@ -73,12 +72,11 @@ func (h *Handler) ListFolderContents(w http.ResponseWriter, r *http.Request) {
 	}
 
 	folderID := parts[2]
-	ownerID := r.URL.Query().Get("owner_id")
+	// ownerID := r.URL.Query().Get("owner_id")
 
 	folders, files, err := h.listHandler.Handle(r.Context(),
 		folderapp.ListFolderContentsQuery{
 			FolderID: folderID,
-			OwnerID:  ownerID,
 		},
 	)
 	if err != nil {
@@ -104,7 +102,6 @@ func (h *Handler) CreateFile(w http.ResponseWriter, r *http.Request) {
 		ID       string `json:"id"`
 		Name     string `json:"name"`
 		FolderID string `json:"folder_id"`
-		OwnerID  string `json:"owner_id"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
